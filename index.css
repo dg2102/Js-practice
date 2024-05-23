@@ -1,0 +1,120 @@
+/* General styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main container */
+body {
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-image: url("https://img.freepik.com/free-vector/3d-triangle-background-with-vivid-colors_23-2148396607.jpg");
+    background-position: center;
+    background-size: cover;
+    color: white;
+    text-align: center;
+}
+
+/* Main content container */
+.main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Header */
+h1 {
+    font-size: 3rem;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Countdown container */
+.countdown {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+    border-radius: 10px;
+    padding: 20px;
+    width: 90%;
+    max-width: 800px;
+}
+
+/* Countdown boxes */
+.countdown div {
+    background: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+    border-radius: 10px;
+    padding: 20px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00e676; /* Light green */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    animation: slideDown 1s ease-in-out;
+}
+
+/* Countdown box headings */
+.countdown h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .countdown {
+        flex-direction: column;
+        width: 90%;
+        padding: 10px;
+    }
+
+    .countdown div {
+        margin-bottom: 10px;
+        width: 80px;
+        height: 80px;
+        font-size: 1.5rem;
+    }
+
+    .countdown h3 {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .countdown {
+        width: 100%;
+    }
+
+    .countdown div {
+        width: 60px;
+        height: 60px;
+        font-size: 1.2rem;
+    }
+
+    .countdown h3 {
+        font-size: 0.6rem;
+    }
+}
