@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        background-color: #f4f4f9;
+        color: #333;
+      }
+      .main {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+      label {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+      input,
+      select,
+      button {
+        padding: 10px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+      button {
+        background-color: #2980b9;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #3498db;
+      }
+      .below {
+        margin-top: 20px;
+        max-height: 400px; /* Set a max-height to make it scrollable */
+        overflow-y: auto; /* Enable vertical scrolling */
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #2980b9;
+        color: #fff;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      tr:hover {
+        background-color: #ddd;
+      }
+      .total {
+        font-size: larger;
+        display: flex;
+        max-width: 80%;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin: auto;
+      }
+      span {
+        font: italic;
+      }
+      .total-expense div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .active{
+        display: block;
+    }
+    .hidden {
+      display: none;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <h1>Expense Tracker</h1>
+      <form id="form">
+        <div>
+          <label for="expense">Expense Name</label>
+          <input id="expense" type="text" placeholder="Write your expense" />
+        </div>
+        <div>
+          <label for="expenses">Type of Expense</label>
+          <select id="expenses">
+            <option value="">please elect an option--</option>
+            <option value="transport">Transport</option>
+            <option value="shopping">Shopping</option>
+            <option value="others">Others</option>
+          </select>
+        </div>
+        <div>
+          <label for="amount">Expense Amount</label>
+          <input id="amount" type="number" placeholder="Expense amount" />
+        </div>
+        <button type="submit" id="btn">Add Expense</button>
+      </form>
+      <div class="total-expense">
+        <h1>Expense summary</h1>
+        <div class="total">
+          <div id="spent">Amount spent:0 <span> </span></div>
+          <div>
+            Budget
+            <input type="number" id="budget-input" placeholder="Enter your budget">
+            <p class=" budget"></p>
+            <i class="fa-solid fa-pen-to-square pen hidden" id="edit-icon" onclick="editBudget()"></i>
+            <i class="fa-sharp fa-solid fa-floppy-disk " id="save-icon" onclick="saveBudget()"></i>
+          <div><button onclick="deleleteAll()">Delete All</button></div>
+        </div>
+      </div>
+      <div class="below">
+        <table id="table">
+          <thead>
+            <tr class="title">
+              <th>S.No.</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Delete</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      let editIndex = -1;
+
+      // Helper functions for localStorage
+
+      function getExpenses() {
+        return JSON.parse(localStorage.getItem("expenses")) || [];
+      }
+
+      function saveExpenses(expenses) {
+        localStorage.setItem("expenses", JSON.stringify(expenses));
+      }
+
+      function addExpense(expense) {
+        const expenses = getExpenses();
+        if (editIndex === -1) {
+          expenses.push(expense);
+        } else {
+          expenses[editIndex] = expense;
+          editIndex = -1;
+        }
+        saveExpenses(expenses);
+        displayExpenses();
+        totalAmount();
+      }
+
+      function deleteExpense(index) {
+        const expenses = getExpenses();
+        expenses.splice(index, 1);
+        saveExpenses(expenses);
+        displayExpenses();
+        totalAmount();
+      }
+      function deleleteAll() {
+        expense = [];
+        localStorage.removeItem("expenses");
+        displayExpenses();
+        totalAmount();
+      }
+
+      function editExpense(index) {
+        const expenses = getExpenses();
+        const expense = expenses[index];
+        document.querySelector("#expense").value = expense.name;
+        document.querySelector("#expenses").value = expense.type;
+        document.querySelector("#amount").value = expense.amount;
+        editIndex = index;
+      }
+
+      function displayExpenses() {
+        const expenses = getExpenses();
+        const expenseList = document.querySelector("#table-body");
+        expenseList.innerHTML = ""; // Clear current displayed expenses
+        expenses.forEach((expense, index) => {
+          const newRow = document.createElement("tr");
+          newRow.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${expense.name}</td>
+          <td>${expense.type}</td>
+          <td>${expense.amount}</td>
+          <td><button onclick="deleteExpense(${index})">Delete</button></td>
+          <td><button onclick="editExpense(${index})">Edit</button></td>
+        `;
+          expenseList.appendChild(newRow);
+          totalAmount();
+        });
+      }
+
+      function totalAmount() {
+        let total = 0;
+        const expenses = getExpenses();
+
+        expenses.forEach((expense) => {
+          total += parseInt(expense.amount); // Convert amount to a number
+        });
+        document.querySelector("#spent").textContent = `Spent Amount: ${total}`;
+      }
+      function editBudget() {
+   
+   document.querySelector("#budget-input").classList.remove("hidden")
+   const showBudget= JSON.parse(localStorage.getItem("budget"));
+   document.querySelector(".budget").classList.add("hidden")
+   
+
+   
+}
+
+    function saveBudget() {
+        
+      budget = parseFloat(document.querySelector("#budget-input").value) || 0;
+     const newBudget=localStorage.setItem("budget",JSON.stringify(budget));
+     const showBudget= JSON.parse(localStorage.getItem("budget"));
+      document.querySelector(".budget").classList.remove("hidden");
+      
+      document.querySelector(".budget").textContent=showBudget;
+
+      document.querySelector("#budget-input").classList.add("hidden")
+      document.querySelector(".pen").classList.remove("hidden");
+
+
+    }
+   
+
+      // Event listener for form submission
+      document.querySelector("#form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.querySelector("#expense").value;
+        const type = document.querySelector("#expenses").value;
+        const amount = document.querySelector("#amount").value;
+        if (name && type && amount && !isNaN(amount)) {
+          addExpense({ name, type, amount });
+          document.querySelector("#form").reset();
+        }
+      });
+
+      // Display expenses on page load
+      window.onload = function() {
+        displayExpenses();
+        const budget = JSON.parse(localStorage.getItem("budget")) || 0;
+      document.querySelector(".budget").textContent = budget;
+    //   document.querySelector(".budget").classList.remove("hidden");
+      document.querySelector("#budget-input").classList.add("hidden");
+      document.querySelector("#edit-icon").classList.remove("hidden");
+    //   document.querySelector("#save-icon").classList.add("hidden");
+      }
+     
+
+    </script>
+  </body>
+</html>
